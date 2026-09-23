@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
@@ -10,7 +11,11 @@ public class PlayerController : MonoBehaviour
     public Vector2 lookValue;
     private Vector2 moveInput;
 
+    private PlayerInput playerInput;
+    private InputAction sprintAction;
+    public InputAction parkourAction;
 
+    private bool isSprinting=false;
     private CharacterController characterController;
     private Vector3 moveDirection;
     private Animator anim;
@@ -20,7 +25,7 @@ public class PlayerController : MonoBehaviour
 
     //private Rigidbody rb;
 
-    [Header("--Ground Check---")]
+    [Header("------Ground Check------")]
 
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
@@ -28,19 +33,25 @@ public class PlayerController : MonoBehaviour
     private float groundCheckRadius = 2f;
 
     private float yspeed = -2f;
-
+    public bool hasControl = true;
+    Quaternion targetRotation;
     private void Start()
     {
         //rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
+        playerInput = GetComponent<PlayerInput>();
+
+        sprintAction = playerInput.actions["Sprint"];
+        parkourAction = playerInput.actions["Parkour"];
     }
 
     private void Update()
     {
         onGroundCheck();
         handleMovement();
-        
+        isSprinting = false;
+
     }
     void OnLook(InputValue value)
     {
@@ -49,19 +60,22 @@ public class PlayerController : MonoBehaviour
 
     void OnMove(InputValue value)
     {
+        
         moveInput = value.Get<Vector2>();
     }
 
-    void OnJump()
+    public void SetControl(bool value)
     {
-        Debug.Log("btn");
-        if(isOnGround == true)
+        hasControl = value;
+        characterController.enabled = hasControl;
+        if (!hasControl)
         {
-            Debug.Log("Jump pressed ");
-            yspeed = jumpForce * Time.deltaTime;
+            //moveInput = Vector2.zero;
+            anim.SetFloat("MoveAmount", 0f);
+            targetRotation = transform.rotation;
+            
         }
     }
-
     private void handleMovement()
     {
         //direction part
@@ -70,18 +84,31 @@ public class PlayerController : MonoBehaviour
 
         moveDirection.Normalize();
         
+        if (!hasControl)
+            return; 
+
         //gravity part
         handleGravity();
+        if (sprintAction.IsPressed())
+        {
+            moveSpeed = 10f;
+        }
+        else
+        {
+            moveSpeed = 5f;
+        }
+
+        Debug.Log("Move Speed: " + moveSpeed);
         var velocity = moveDirection * moveSpeed;
         
         velocity.y = yspeed;
-        Debug.Log(velocity.y);
+        
         characterController.Move(velocity * Time.deltaTime);
 
         //rotation part
         if (moveDirection.magnitude > 0.1f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            targetRotation = Quaternion.LookRotation(moveDirection);
 
             transform.rotation = Quaternion.Slerp(transform.rotation,targetRotation,Time.deltaTime * 10f);
         }
@@ -99,14 +126,7 @@ public class PlayerController : MonoBehaviour
 
     public void handleGravity()
     {
-        if (isOnGround)
-        {
-            characterController.height = 1f;
-        }
-        else
-        {
-            characterController.height = 2.5f;
-        }
+    
         if(isOnGround && yspeed < 0)
         {
             
@@ -115,10 +135,17 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            Debug.Log("Not on ground");
+            
             yspeed += Physics.gravity.y * Time.deltaTime;
             anim.SetBool("onGround", false);
         }
      
+    }
+
+    private void OnDrawGizmos() //drawing gizmos
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+
     }
 }
