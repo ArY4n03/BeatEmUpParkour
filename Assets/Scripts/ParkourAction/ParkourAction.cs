@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Parkour Action/New Parkour Action")]
+[CreateAssetMenu(menuName = "Actions/New Parkour Action")]
 public class ParkourAction : ScriptableObject
 {
     public string animName;

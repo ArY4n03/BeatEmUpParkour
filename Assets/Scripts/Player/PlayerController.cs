@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     private PlayerInput playerInput;
     private InputAction sprintAction;
     public InputAction parkourAction;
+    public InputAction atkInput;
 
     private bool isSprinting=false;
     private CharacterController characterController;
@@ -44,6 +45,7 @@ public class PlayerController : MonoBehaviour
 
         sprintAction = playerInput.actions["Sprint"];
         parkourAction = playerInput.actions["Parkour"];
+        atkInput = playerInput.actions["Attack"];
     }
 
     private void Update()

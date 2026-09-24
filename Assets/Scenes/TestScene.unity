@@ -1603,6 +1603,15 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
+  atkInput:
+    m_Name: Atk Input
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 6c905dec-4ce0-400a-8451-543da189740d
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
   cam: {fileID: 1290623098}
   groundCheck: {fileID: 1312364324}
   groundLayer:
@@ -1701,6 +1710,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2f03373d988ee14c87f62fcafa8664e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatSystem
+  combatActions:
+  - {fileID: 11400000, guid: 0048a5ada9f87c545b5fbaeda8d1607a, type: 2}
+  - {fileID: 11400000, guid: e193661c1deb81d4fa0f9668730e2196, type: 2}
+  - {fileID: 11400000, guid: 26909edcad7669b418bb5762c98f3ebe, type: 2}
 --- !u!4 &1489509624 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1194246684159540704, guid: e8b18a9f826b5a644ac9e5b0d5d884cd, type: 3}
